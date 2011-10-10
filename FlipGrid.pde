@@ -61,9 +61,24 @@ void draw() {
 
 void keyPressed() {
   if(key == ' ') {
-    if(mode == WIDE_MODE) mode = VISIT_MODE;
-    else if(mode == VISIT_MODE) mode = WIDE_MODE;
+    //if(mode == WIDE_MODE) mode = VISIT_MODE;
+    //else if(mode == VISIT_MODE) mode = WIDE_MODE;
+    toggleVisit();
   }  
+}
+
+void toggleVisit() {
+  if(mode != VISIT_MODE) {
+    grid.startVisit = new PVector(grid.center.x, grid.center.y, grid.zoom);
+    grid.visitStep = 0;
+    mode = VISIT_MODE;
+  }  
+  else {
+    grid.startVisit = new PVector(grid.center.x, grid.center.y, grid.zoom);
+    grid.visitStep = 0;
+    grid.nextVisit = new PVector(0,0,1);
+    mode = WIDE_MODE;
+  }
 }
 
 void mouseDragged() {

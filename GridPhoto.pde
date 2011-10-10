@@ -33,7 +33,7 @@ class GridPhoto implements Runnable {
   float zoomLevel = 1;
   int zoomDirection = 1;
   static final float MAX_ZOOM = 3;
-  static final int ZOOM_TIME = 2000;
+  static final int ZOOM_TIME = 3000;
   
   static final float PERSPECTIVE_FACTOR = 0.2;
   

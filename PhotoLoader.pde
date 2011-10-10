@@ -2,7 +2,7 @@ import org.json.*;
 import java.util.*;
 
 class PhotoLoader implements Runnable {
-  String creatorsFeed = "https://api.instagram.com/v1/tags/occupywallstreet/media/recent?access_token=1273119.e3ef9b3.b5475046fcf948cc9b766869cbe6e551";
+  String creatorsFeed = "https://api.instagram.com/v1/tags/creators/media/recent?access_token=1273119.e3ef9b3.b5475046fcf948cc9b766869cbe6e551";
   String occupyFeed = "https://api.instagram.com/v1/tags/occupywallstreet/media/recent?access_token=1273119.e3ef9b3.b5475046fcf948cc9b766869cbe6e551";
   
   Stack<String> photoStack;

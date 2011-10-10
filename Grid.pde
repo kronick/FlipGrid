@@ -10,8 +10,8 @@ class Grid {
   static final float MAX_SPEED = 5;
   float zoom;
   float zoomTarget;
-  float zoomK = 0.002;
-  float centerK = 0.002;
+  float zoomK = 0.1;//0.002;
+  float centerK = 0.1;//0.002;
   float linearDamping = 0.85;
   
   PVector focusTarget;
@@ -21,6 +21,10 @@ class Grid {
   
   Stack<PVector> visitQueue;
   PVector nextVisit;
+  PVector startVisit;
+  int visitStep = 0;
+  static final int VISIT_DURATION = 300;
+  
   int visitTimer = 0;
   static final int VISIT_LENGTH = 500;  // Amount to dwell on visited photo within threshold
   static final float VISIT_THRESH = 10;  // Max distance from visiting photo to start timer
@@ -40,6 +44,7 @@ class Grid {
     
     visitQueue = new Stack<PVector>();
     nextVisit = null;
+    startVisit = centerTarget.get();
     
     photos = new GridPhoto[rows][cols];
     for(int i=0; i<rows; i++) {
@@ -76,20 +81,22 @@ class Grid {
       }
     }
     
-    if(parent.mode == VISIT_MODE) {
-      
-      //zoomTarget = focusZoom;
-      //centerTarget = focusTarget.get();
+    if(parent.mode == VISIT_MODE || parent.mode == WIDE_MODE) {
       if(nextVisit != null) {
-        centerTarget = new PVector(nextVisit.x, nextVisit.y);
-        zoomTarget = nextVisit.z;
-        if(PVector.dist(new PVector(nextVisit.x, nextVisit.y), centerTarget) < VISIT_THRESH)
+        centerTarget = new PVector(tweenEaseInOutBack(visitStep, VISIT_DURATION, startVisit.x, nextVisit.x, 0.4),
+                                   tweenEaseInOutBack(visitStep, VISIT_DURATION, startVisit.y, nextVisit.y,0.4));
+        zoomTarget = tweenEaseInOutBack(visitStep, VISIT_DURATION, startVisit.z, nextVisit.z);
+        
+        if(visitStep >= VISIT_DURATION)
           visitTimer++;
+         else visitStep++;
       }
       if(nextVisit == null || visitTimer > VISIT_LENGTH) {
         // Grab the next target from the queue
-        if(visitQueue.size() > 0) {
+        if(visitQueue.size() > 0 && mode == VISIT_MODE) {
+          if(nextVisit != null) startVisit = nextVisit.get();
           nextVisit = visitQueue.pop();
+          visitStep = 0;
           visitTimer = 0;
         }
       }
@@ -101,6 +108,8 @@ class Grid {
     }
     
     if(zoomTarget < 0.1) zoomTarget = 0.1;
+    
+    /*
     velocity.z += (zoomTarget - zoom) * zoomK;
     
     zoom += velocity.z;
@@ -122,6 +131,10 @@ class Grid {
     
     center.x += velocity.x;
     center.y += velocity.y;
+    */
+    center.x += (centerTarget.x - center.x) * centerK;
+    center.y += (centerTarget.y - center.y) * centerK;    
+    zoom += (zoomTarget - zoom) * zoomK;
   }
   
   void draw() {
