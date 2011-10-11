@@ -73,11 +73,6 @@ class PhotoLoader implements Runnable {
         for(int i=0; i<photosArray.length(); i++) {
           JSONObject obj = photosArray.getJSONObject(i);
           
-          JSONArray names = obj.names();
-          for(int idx=0; idx<names.length(); idx++) {
-            //println(names.getString(idx));
-          }
-          
           String url = obj.getJSONObject("images").getJSONObject("low_resolution").getString("url");
           
           String caption = "";
@@ -110,7 +105,7 @@ class PhotoLoader implements Runnable {
               //  parent.grid.visitQueue.clear();
               
               // Tell the selected grid space to change its image
-              p.changeImage(url, !initialLoad);
+              p.changeImage(url, !initialLoad, !initialLoad);
               newPhotos++;
               print(".");
             }

@@ -36,14 +36,14 @@ class GridPhoto implements Runnable {
   float zoomLevel = 1;
   int zoomDirection = 1;
   static final float MAX_ZOOM = 3;
-  static final int ZOOM_TIME = 3000;
+  static final int ZOOM_TIME = 5000;
   
   static final float PERSPECTIVE_FACTOR = 0.2;
   
   static final float RANDOM_ZOOM_CHANCE = 0.0001;
   static final float RANDOM_FLIP_CHANCE = -1;
   static final float RANDOM_RELOAD_CHANCE = 0.0001;
-  static final float RANDOM_VISIT_CHANCE = 0.5;
+  static final float RANDOM_VISIT_CHANCE = 0.44;
   
   static final float VISIT_ZOOM_MIN = 1;
   final float VISIT_ZOOM_MAX = ROWS/6.;
@@ -253,25 +253,33 @@ class GridPhoto implements Runnable {
   }
   
   void changeImage(String _url, boolean _zoomOnLoad) {
+    changeImage(_url, _zoomOnLoad, false);
+  }
+  void changeImage(String _url, boolean _zoomOnLoad, boolean brandNew) {
     flipSoon = true;
     zoomOnLoad = _zoomOnLoad;
     
     downloadNextImage(_url);
     age = 0;
     
-    if(zoomOnLoad) visitMe();
+    if(zoomOnLoad) visitMe(brandNew);
     
     //parent.focusTarget = grid.getCenter(this);
     //parent.focusZoom = random(.75,2);
   }
   
   void visitMe() {
+    visitMe(false);
+  }
+  void visitMe(boolean priority) {
     float offsetX = (int)random(-3,4)*parent.gridSpace;
     float offsetY = (int)random(-2,3)*parent.gridSpace;
+    PVector loc = new PVector(parent.getCenter(this).x + offsetX,
+                              parent.getCenter(this).y + offsetY,
+                              random(VISIT_ZOOM_MIN, VISIT_ZOOM_MAX));
     
-    parent.visitQueue.push(new PVector(parent.getCenter(this).x + offsetX,
-                                        parent.getCenter(this).y + offsetY,
-                                        random(VISIT_ZOOM_MIN, VISIT_ZOOM_MAX)));
+    if(priority) parent.visitPriorityQueue.push(loc);
+    else         parent.visitQueue.push(loc);
   }
   
   void run() {

@@ -20,6 +20,7 @@ class Grid {
   int cascadePhase = 0;
   
   Stack<PVector> visitQueue;
+  Stack<PVector> visitPriorityQueue;
   PVector nextVisit;
   PVector startVisit;
   int visitStep = 0;
@@ -43,6 +44,7 @@ class Grid {
     focusZoom = zoomTarget;
     
     visitQueue = new Stack<PVector>();
+    visitPriorityQueue = new Stack<PVector>();
     nextVisit = null;
     startVisit = centerTarget.get();
     
@@ -93,11 +95,29 @@ class Grid {
       }
       if(nextVisit == null || visitTimer > VISIT_LENGTH) {
         // Grab the next target from the queue
-        if(visitQueue.size() > 0 && mode == VISIT_MODE) {
-          if(nextVisit != null) startVisit = nextVisit.get();
-          nextVisit = visitQueue.pop();
-          visitStep = 0;
-          visitTimer = 0;
+        if(mode == VISIT_MODE) {
+          PVector _next = visitPriorityQueue.size() > 0 ? visitPriorityQueue.pop() : 
+                          visitQueue.size() > 0 ? visitQueue.pop() : null;         
+          if(_next != null) {
+            if(nextVisit != null) startVisit = nextVisit.get();
+            nextVisit = _next.get();
+            visitStep = 0;
+            visitTimer = 0;  
+          } 
+          /*
+          if(visitPriorityQueue.size() > 0) {
+            if(nextVisit != null) startVisit = nextVisit.get();
+            nextVisit = visitPriorityQueue.pop();
+            visitStep = 0;
+            visitTimer = 0;            
+          }
+          else if(visitQueue.size() > 0) {
+            if(nextVisit != null) startVisit = nextVisit.get();
+            nextVisit = visitQueue.pop();
+            visitStep = 0;
+            visitTimer = 0;
+          }
+          */
         }
       }
       
