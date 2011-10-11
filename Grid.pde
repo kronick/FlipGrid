@@ -191,7 +191,7 @@ class Grid {
             drawPhoto(i, j);
           }
         } 
-      }     
+      }         
     
     /*
     PVector[] corners = viewportCorners();
@@ -270,7 +270,7 @@ class Grid {
     
     return out;  
   }
-  
+
   void drawPhoto(int i, int j) {
     for(int tileX = -1; tileX <= 1; tileX++) {
       for(int tileY = -1; tileY <= 1; tileY++) {

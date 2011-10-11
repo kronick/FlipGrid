@@ -218,8 +218,8 @@ class GridPhoto implements Runnable {
     fill(255,255,255,100);
     
     texturedQuad.render();
-    //parent.parent.renderer.model(texturedQuad);
   }
+  
   
   void triggerFlip() { triggerFlip(false); }
   void triggerFlip(boolean force) {

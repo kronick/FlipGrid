@@ -12,8 +12,8 @@ static final int CASCADE_MODE = 2;
 static final int PAN_MODE = 3;
 int mode = WIDE_MODE;
 
-static final int ROWS = 20;
-static final int COLS = 12;
+static final int ROWS = 12;
+static final int COLS = 20;
 
 PFont debugFont;
 
