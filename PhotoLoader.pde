@@ -7,6 +7,7 @@ class PhotoLoader implements Runnable {
   
   Stack<String> photoStack;
   Stack<Boolean> availability;
+  Stack<String> captions;
   
   boolean loading;
   
@@ -20,8 +21,9 @@ class PhotoLoader implements Runnable {
   PhotoLoader(FlipGrid _parent) {
     this.parent = _parent;
     
-    photoStack = new Stack<String>();
+    photoStack =   new Stack<String>();
     availability = new Stack<Boolean>();
+    captions =     new Stack<String>();
   }
   
   void update() {
@@ -70,13 +72,30 @@ class PhotoLoader implements Runnable {
         
         for(int i=0; i<photosArray.length(); i++) {
           JSONObject obj = photosArray.getJSONObject(i);
+          
+          JSONArray names = obj.names();
+          for(int idx=0; idx<names.length(); idx++) {
+            //println(names.getString(idx));
+          }
+          
           String url = obj.getJSONObject("images").getJSONObject("low_resolution").getString("url");
+          
+          String caption = "";
+          if(obj.has("caption")) {
+            try {
+              caption = obj.getJSONObject("caption").getString("text");
+            }
+            catch (JSONException e) { }
+          }
+          
+          println(caption);
           
           retrieved++;
           
           if(!photoStack.contains(url)) {
             photoStack.push(url);
             availability.push(true);
+            captions.push(caption);
             GridPhoto p;
             // Grab an empty (if this is the initial load) or random photo space
             if(initialLoad)

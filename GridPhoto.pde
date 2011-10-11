@@ -1,8 +1,11 @@
 class GridPhoto implements Runnable {
   String frontURL, backURL;
   String nextURL;
+  String nextCaption;
   GLTexture frontTexture, backTexture;
   GLModel texturedQuad;
+  
+  String frontCaption, backCaption;
   
   PImage frontImage, backImage;
   boolean backWaiting, frontWaiting;
@@ -43,11 +46,14 @@ class GridPhoto implements Runnable {
   static final float RANDOM_VISIT_CHANCE = 0.5;
   
   static final float VISIT_ZOOM_MIN = 1;
-  final float VISIT_ZOOM_MAX = ROWS/3.;
+  final float VISIT_ZOOM_MAX = ROWS/6.;
   
   GridPhoto(Grid _parent, String _url) {
      this.parent = _parent;
      this.frontURL = _url;
+     
+     this.frontCaption = "";
+     this.backCaption = "";
      
      texturedQuad = new GLModel(parent.parent, 6, GLModel.TRIANGLE_FAN, GLModel.DYNAMIC);
      setVertices();
@@ -213,36 +219,6 @@ class GridPhoto implements Runnable {
     
     texturedQuad.render();
     //parent.parent.renderer.model(texturedQuad);
-    
-    /*
-    float a = cos(radians(angleY));
-    float b = sin(radians(angleY));
-    
-    //scale(zoomLevel);
-    
-    beginShape(TRIANGLE_FAN);
-    
-    texture(side > 0 ? frontTexture : backTexture);
-    float g = -parent.gridSpace/2 * zoomLevel;
-    
-    int X1 = side > 0 ? 0 : 1;
-    int X2 = side > 0 ? 1 : 0;
-    
-    vertex(0,0, 0.5, 0.5);
-    vertex( g*a,  g - b*g*PERSPECTIVE_FACTOR, X1,0);
-    vertex( g*a, -g + b*g*PERSPECTIVE_FACTOR, X1,1);
-    vertex(-g*a, -g - b*g*PERSPECTIVE_FACTOR, X2,1);
-    vertex(-g*a,  g + b*g*PERSPECTIVE_FACTOR, X2,0);
-    vertex( g*a,  g - b*g*PERSPECTIVE_FACTOR, X1,0);
-    
-    endShape(CLOSE);
-    */
-    
-      
-    //if(zoomSoon) {
-    //  fill(0,255,0);
-    //  ellipse(0,0, 10,10);
-    //}
   }
   
   void triggerFlip() { triggerFlip(false); }
@@ -290,8 +266,11 @@ class GridPhoto implements Runnable {
   }
   
   void visitMe() {
-    parent.visitQueue.push(new PVector(parent.getCenter(this).x,
-                                        parent.getCenter(this).y,
+    float offsetX = (int)random(-3,4)*parent.gridSpace;
+    float offsetY = (int)random(-2,3)*parent.gridSpace;
+    
+    parent.visitQueue.push(new PVector(parent.getCenter(this).x + offsetX,
+                                        parent.getCenter(this).y + offsetY,
                                         random(VISIT_ZOOM_MIN, VISIT_ZOOM_MAX)));
   }
   
@@ -317,6 +296,8 @@ class GridPhoto implements Runnable {
       if(zoomOnLoad) zoomSoon = true;
       zoomOnLoad = false; 
       
+      backCaption = parent.parent.loader.captions.get(newIndex);
+      
       // Free up the old photo so another space can use it
       int oldIndex = parent.parent.loader.photoStack.indexOf(frontURL);
       if(oldIndex > -1)
@@ -335,6 +316,8 @@ class GridPhoto implements Runnable {
       
       if(zoomOnLoad) zoomSoon = true;
       zoomOnLoad = false; 
+      
+      frontCaption = parent.parent.loader.captions.get(newIndex);
       
       // Free up the old photo so another space can use it
       int oldIndex = parent.parent.loader.photoStack.indexOf(backURL);
