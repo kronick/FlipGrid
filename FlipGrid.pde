@@ -1,5 +1,6 @@
 import processing.opengl.*;
-import codeanticode.glgraphics.*;
+import
+codeanticode.glgraphics.*;
 import javax.media.opengl.*;
 import java.util.*;
 
@@ -19,12 +20,14 @@ PFont debugFont;
 
 GLGraphics renderer;
 
+boolean transitionSoon = false;
+boolean transitioned = false;
+
 void setup() {
   //size(1080/2, 1920/2, GLConstants.GLGRAPHICS);
   size(screen.width,screen.height-1, GLConstants.GLGRAPHICS);
   //smooth();
   frameRate(60);
-
   //grid = new Grid(this, 6, 10);
   grid = new Grid(this, ROWS, COLS);
   loader = new PhotoLoader(this);
@@ -38,10 +41,26 @@ void setup() {
   debugFont = createFont("Courier-Bold", 24);
   textFont(debugFont);
   
+  noCursor();
+  
   //perspective(PI/6, width/(float)height, cameraZ/10.0, cameraZ*10.0);
 }
 
 void draw() {
+  // UPDATE
+  // ======================
+  if(second() == 0 && !transitioned) {
+    transitionSoon = true;
+    transitioned = true;
+  }
+  if(second() > 0) {
+    transitioned = false;
+  }
+  
+  handleModes();
+  
+  // DRAW
+  // ======================
   renderer = (GLGraphics)g;
   renderer.beginGL();
     //GL gl = renderer.gl;
@@ -63,21 +82,24 @@ void keyPressed() {
   if(key == ' ') {
     //if(mode == WIDE_MODE) mode = VISIT_MODE;
     //else if(mode == VISIT_MODE) mode = WIDE_MODE;
-    toggleVisit();
+    transitionSoon = true;
   }  
 }
 
-void toggleVisit() {
-  if(mode != VISIT_MODE) {
-    grid.startVisit = new PVector(grid.center.x, grid.center.y, grid.zoom);
-    grid.visitStep = 0;
-    mode = VISIT_MODE;
-  }  
-  else {
-    grid.startVisit = new PVector(grid.center.x, grid.center.y, grid.zoom);
-    grid.visitStep = 0;
-    grid.nextVisit = new PVector(0,0,1);
-    mode = WIDE_MODE;
+void handleModes() {
+  if(transitionSoon && !grid.inTransit) {
+    if(mode != VISIT_MODE) {
+      grid.startVisit = new PVector(grid.center.x, grid.center.y, grid.zoom);
+      grid.visitStep = 0;
+      mode = VISIT_MODE;
+    }  
+    else {
+      grid.startVisit = new PVector(grid.center.x, grid.center.y, grid.zoom);
+      grid.visitStep = 0;
+      grid.nextVisit = new PVector(0,0,1);
+      mode = WIDE_MODE;
+    }
+    transitionSoon = false;
   }
 }
 

@@ -9,6 +9,10 @@ class PhotoLoader implements Runnable {
   Stack<Boolean> availability;
   Stack<String> captions;
   
+  static final int MIN_STACK_SIZE = 305;
+  static final float OCCUPIED_PERCENT = 0.05;
+  int occupiedPhotos = 0;
+  
   boolean loading;
   
   float lastUpdateTime = 0;
@@ -54,23 +58,49 @@ class PhotoLoader implements Runnable {
   
   void run() {
     println("Reloading feed...");
-    int limit = initialLoad ? 500 : 20;
     int retrieved = 0;
-    int newPhotos = 0;
     String max_id = "";
     
-    try {
-      while(retrieved < limit) {
-        String lines[] = loadStrings(creatorsFeed + (max_id.equals("") ? "" : ("&max_id=" + max_id)));
-        String json = join(lines, "\n");
-        
+    int newPhotos = loadPhotos(creatorsFeed, 20, MIN_STACK_SIZE);
+    println("\n" + newPhotos + " new photos added to the stack (total: " + photoStack.size() + ")");
+    while(occupiedPhotos / (float)photoStack.size() < OCCUPIED_PERCENT) {
+      int newOccupations = loadPhotos(occupyFeed, 100, 0, 5);
+      occupiedPhotos += newOccupations;
+      println("New occupied photos: " + newOccupations + " (total: " + occupiedPhotos + " out of " + photoStack.size() + ")");
+      if(newOccupations == 0) break;
+    }
+
+    
+    lastUpdateTime = millis();
+    loading = false;
+    
+    initialLoad = false;
+  } 
+  
+  int loadPhotos(String feed, int atATime, int keepFull) {
+    return loadPhotos(feed, atATime, keepFull, Integer.MAX_VALUE);
+  }
+  int loadPhotos(String feed, int atATime, int keepFull, int limit) {
+    int newPhotos = 0;    
+    int retrieved = 0;
+    String max_id = "";
+    while((photoStack.size() < keepFull || retrieved < atATime) && newPhotos < limit) {
+      print(".");
+      try {
+        String lines[] = loadStrings(feed + (max_id.equals("") ? "" : ("&max_id=" + max_id)));
+        String json = join(lines, "\n");    
         JSONObject jsonObj = new JSONObject(json);
         JSONArray photosArray = jsonObj.getJSONArray("data");
-        max_id = jsonObj.getJSONObject("pagination").getString("next_max_id");
+        try {
+          max_id = jsonObj.getJSONObject("pagination").getString("next_max_id");
+        }
+        catch (JSONException e) { break; }
         
         if(photosArray.length() == 0) break;
         
         for(int i=0; i<photosArray.length(); i++) {
+          if(newPhotos >= limit) break;  // Stop if enough have been loaded
+          
           JSONObject obj = photosArray.getJSONObject(i);
           
           String url = obj.getJSONObject("images").getJSONObject("low_resolution").getString("url");
@@ -83,7 +113,7 @@ class PhotoLoader implements Runnable {
             catch (JSONException e) { }
           }
           
-          println(caption);
+          //println(caption);
           
           retrieved++;
           
@@ -99,34 +129,22 @@ class PhotoLoader implements Runnable {
               p = parent.grid.randomPhoto(10, true);
               
             if(p != null) {  // Ok, this is a good new photo
-              // If this is the first on this round, clear the visit queue so these
-              // ones pop to the top
-              //if(newPhotos == 0)
-              //  parent.grid.visitQueue.clear();
-              
               // Tell the selected grid space to change its image
               p.changeImage(url, !initialLoad, !initialLoad);
-              newPhotos++;
-              print(".");
+              //print(".");
             }
+            
+            newPhotos++;
             
           }
         }
       }
-      
-      //if(initialLoad)
-      //  parent.grid.visitQueue.clear();
-        
-      println("\n" + newPhotos + " new photos added to the stack.");
-      
+      catch (Exception e) {
+        println("Problem with Instagram API: " + e);
+      }
     }
-    catch (Exception e) {
-      println(e);
-    }
-    
-    lastUpdateTime = millis();
-    loading = false;
-    
-    initialLoad = false;
-  } 
+
+    // done    
+    return newPhotos;
+  }  
 }

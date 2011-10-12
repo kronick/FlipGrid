@@ -24,10 +24,10 @@ class Grid {
   PVector nextVisit;
   PVector startVisit;
   int visitStep = 0;
-  static final int VISIT_DURATION = 300;
-  
   int visitTimer = 0;
-  static final int VISIT_LENGTH = 500;  // Amount to dwell on visited photo within threshold
+  static final int VISIT_DURATION = 300;  // Time between photo visits
+  static final int VISIT_LENGTH = 500;  // Amount to dwell on visited photo within threshold  
+  boolean inTransit = false;  // Set to true while moving to the next photo to visit
   static final float VISIT_THRESH = 10;  // Max distance from visiting photo to start timer
   
   Grid(FlipGrid _parent, int _rows, int _cols) {
@@ -89,9 +89,16 @@ class Grid {
                                    tweenEaseInOutBack(visitStep, VISIT_DURATION, startVisit.y, nextVisit.y,0.4));
         zoomTarget = tweenEaseInOutBack(visitStep, VISIT_DURATION, startVisit.z, nextVisit.z);
         
-        if(visitStep >= VISIT_DURATION)
+        if(visitStep >= VISIT_DURATION) {
+          // Pausing on one photo
           visitTimer++;
-         else visitStep++;
+          inTransit = false;          
+        }
+        else {
+          // Moving to the next photo
+          visitStep++;
+          inTransit = true;
+        }
       }
       if(nextVisit == null || visitTimer > VISIT_LENGTH) {
         // Grab the next target from the queue
@@ -104,20 +111,6 @@ class Grid {
             visitStep = 0;
             visitTimer = 0;  
           } 
-          /*
-          if(visitPriorityQueue.size() > 0) {
-            if(nextVisit != null) startVisit = nextVisit.get();
-            nextVisit = visitPriorityQueue.pop();
-            visitStep = 0;
-            visitTimer = 0;            
-          }
-          else if(visitQueue.size() > 0) {
-            if(nextVisit != null) startVisit = nextVisit.get();
-            nextVisit = visitQueue.pop();
-            visitStep = 0;
-            visitTimer = 0;
-          }
-          */
         }
       }
       
@@ -129,39 +122,12 @@ class Grid {
     
     if(zoomTarget < 0.1) zoomTarget = 0.1;
     
-    /*
-    velocity.z += (zoomTarget - zoom) * zoomK;
-    
-    zoom += velocity.z;
-    //zoom = 1.5;
-    
-    velocity.x += (centerTarget.x - center.x) * centerK;
-    velocity.y += (centerTarget.y - center.y) * centerK;
-    
-    velocity.x *= linearDamping;
-    velocity.y *= linearDamping;
-    velocity.z *= linearDamping;
-    
-    if(velocity.x >  MAX_SPEED) velocity.x =  MAX_SPEED;
-    if(velocity.y >  MAX_SPEED) velocity.y =  MAX_SPEED;
-    if(velocity.z >  MAX_SPEED) velocity.z =  MAX_SPEED;
-    if(velocity.x < -MAX_SPEED) velocity.x = -MAX_SPEED;
-    if(velocity.y < -MAX_SPEED) velocity.y = -MAX_SPEED;
-    if(velocity.z < -MAX_SPEED) velocity.z = -MAX_SPEED;
-    
-    center.x += velocity.x;
-    center.y += velocity.y;
-    */
     center.x += (centerTarget.x - center.x) * centerK;
     center.y += (centerTarget.y - center.y) * centerK;    
     zoom += (zoomTarget - zoom) * zoomK;
   }
   
-  void draw() {
-    //zoom = cos(radians(frameCount))+2;
-    //zoom = 2;
-    //center = new PVector(100*cos(radians(frameCount)), 100*sin(radians(frameCount)));
-    
+  void draw() {    
     pushMatrix();
       translate(width/2, height/2);
       scale(zoom);
@@ -193,17 +159,6 @@ class Grid {
         } 
       }         
     
-    /*
-    PVector[] corners = viewportCorners();
-    fill(255,0,128);
-    ellipse(corners[0].x, corners[0].y, 10,10);
-    fill(0,128,255);
-    ellipse(corners[1].x, corners[1].y, 10,10);
-    
-    fill(255,255,255,80);
-    rectMode(CORNERS);
-    rect(corners[0].x, corners[0].y, corners[1].x, corners[1].y);
-    */
     popMatrix();
   }
   
