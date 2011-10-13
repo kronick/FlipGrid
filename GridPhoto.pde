@@ -122,9 +122,12 @@ class GridPhoto implements Runnable {
       triggerZoom();
     
     if(!flipping && random(0,1) < RANDOM_RELOAD_CHANCE) {
-      String u = parent.parent.loader.randomPhoto();
-      if(u != null)
-        changeImage(u);  
+      try {
+        String u = parent.parent.loader.randomPhoto();
+        if(u != null)
+          changeImage(u);  
+      }
+      catch (Exception e) { println(e); }
     }    
     
     // FLIP STUFF

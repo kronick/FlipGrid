@@ -10,7 +10,7 @@ class PhotoLoader implements Runnable {
   Stack<String> captions;
   
   static final int MIN_STACK_SIZE = 305;
-  static final float OCCUPIED_PERCENT = 0.05;
+  static final float OCCUPIED_PERCENT = 0.02;
   int occupiedPhotos = 0;
   
   boolean loading;
