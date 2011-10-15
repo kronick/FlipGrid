@@ -86,7 +86,7 @@ void draw() {
   */
  
   hashtagStep++;
-  if(hashtagStep > HASHTAG_FADE_TIME*4) {
+  if(hashtagStep > HASHTAG_FADE_TIME*2) {
     hashtagStep = 0;
     hashtagPosition = (int)random(0,4); 
   }

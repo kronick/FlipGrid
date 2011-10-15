@@ -14,13 +14,13 @@ class PhotoLoader implements Runnable {
   Stack<String> captions;
   
   static final int MIN_STACK_SIZE = 305;
-  static final float OCCUPIED_PERCENT = 0.02;
+  static final float OCCUPIED_PERCENT = 0.0;
   int occupiedPhotos = 0;
   
   boolean loading;
   
   float lastUpdateTime = 0;
-  static final int UPDATE_FREQUENCY = 1000;  // milliseconds
+  static final int UPDATE_FREQUENCY = 2000;  // milliseconds
   
   boolean initialLoad = true;
   
