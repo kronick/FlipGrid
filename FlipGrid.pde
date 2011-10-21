@@ -1,6 +1,5 @@
 import processing.opengl.*;
-import
-codeanticode.glgraphics.*;
+import codeanticode.glgraphics.*;
 import javax.media.opengl.*;
 import java.util.*;
 
@@ -27,6 +26,8 @@ boolean transitioned = false;
 int hashtagStep = 0;
 static final int HASHTAG_FADE_TIME = 960;
 int hashtagPosition = 0;
+
+static final String hashtag = " #CMJ ";
 
 void setup() {
   //size(1080/2, 1920/2, GLConstants.GLGRAPHICS);
@@ -119,16 +120,16 @@ void draw() {
         break;
       case 3:
       default:
-        translate(width-textWidth(" #creators"), height);
+        translate(width-textWidth(hashtag), height);
         break;
     }
     
     fill(0,0,0, alpha);
     rectMode(CORNER);
-    rect(0,150*.1, textWidth(" #creators"), -150*1.1);
+    rect(0,150*.1, textWidth(hashtag), -150*1.1);
     
     fill(255,255,255,alpha);
-    text(" #creators", 0,0);
+    text(hashtag, 0,0);
     popMatrix();
   }
 

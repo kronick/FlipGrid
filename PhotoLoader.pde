@@ -2,12 +2,10 @@ import org.json.*;
 import java.util.*;
 
 class PhotoLoader implements Runnable {
-  //String creatorsFeed = "https://api.instagram.com/v1/tags/creators/media/recent?access_token=1273119.e3ef9b3.b5475046fcf948cc9b766869cbe6e551";
-  //String occupyFeed = "https://api.instagram.com/v1/tags/creatorsproject/media/recent?access_token=1273119.e3ef9b3.b5475046fcf948cc9b766869cbe6e551";
-  //String creatorsFeed = "https://api.instagram.com/v1/tags/creators/media/recent?client_id=29ac6223c4b74d86897c0476c5d4f9b9
-  //String occupyFeed = "https://api.instagram.com/v1/tags/creatorsproject/media/recent?client_id=29ac6223c4b74d86897c0476c5d4f9b9
-  String creatorsFeed = "https://api.instagram.com/v1/tags/creators/media/recent?client_id=11444eddaf6a450ab199d2b5a27665db
-  String occupyFeed = "https://api.instagram.com/v1/tags/creatorsproject/media/recent?client_id=11444eddaf6a450ab199d2b5a27665db
+  //String creatorsFeed = "https://api.instagram.com/v1/tags/creators/media/recent?client_id=11444eddaf6a450ab199d2b5a27665db
+  //String occupyFeed = "https://api.instagram.com/v1/tags/creatorsproject/media/recent?client_id=11444eddaf6a450ab199d2b5a27665db
+  String creatorsFeed = "https://api.instagram.com/v1/tags/cmj/media/recent?access_token=1273119.e3ef9b3.b5475046fcf948cc9b766869cbe6e551";
+  String occupyFeed = "https://api.instagram.com/v1/tags/creatorsproject/media/recent?access_token=1273119.e3ef9b3.b5475046fcf948cc9b766869cbe6e551";
   
   Stack<String> photoStack;
   Stack<Boolean> availability;
